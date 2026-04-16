@@ -70,6 +70,7 @@ body {
   background-color: #eee;
   border-top-left-radius: 0.7rem;
   border-top-right-radius: 0.7rem;
+  border-bottom: 1px solid #d5d4d4;
 }
 
 .country__data {
