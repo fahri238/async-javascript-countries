@@ -109,6 +109,10 @@ body {
   cursor: pointer;
 }
 
+.hidden {
+  display: none !important ;
+}
+
 .images {
   display: flex;
 }
