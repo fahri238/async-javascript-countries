@@ -3,20 +3,23 @@ const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 const renderCountry = function (data, className = '') {
+  const population =
+        data.population > 1000000
+          ? `${(data.population / 1000000).toFixed(2)} Milion`
+          : `${(data.population / 1000).toFixed(1)} Thousand`;
   const html = `
   <article class="country ${className}">
     <img class="country__img" src="${data.flags.png}" />
     <div class="country__data">
-      <h3 class="country__name">${data.name.common}</h3>
+      <h3 class="country__name">${data.name}</h3>
       <h4 class="country__region">${data.region}</h4>
-      <p class="country__row"><span>👫</span>${(data.population / 10000000).toFixed(1)} People</p>
-      <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
-      <p class="country__row"><span>💰</span>${Object.keys(data.currencies)[0]}</p>
+      <p class="country__row"><span>👫</span>${population} People</p>
+      <p class="country__row"><span>🗣️</span>${data.languages[0].nativeName}</p>
+      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
     </div>
   </article>
   `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  // countriesContainer.style.opacity = 1;
 };
 
 const renderError = function (msg) {
@@ -75,9 +78,8 @@ getCountry('japan');
 */
 //////////////////////////////////////////////
 // CALLBACK HELL
-/*
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
+// const btn = document.querySelector('.btn-country');
+// const countriesContainer = document.querySelector('.countries');
 
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
 // https://restcountries.com/v2/name/portugal
@@ -89,72 +91,71 @@ const countriesContainer = document.querySelector('.countries');
 // https://countries-api-836d.onrender.com/countries/
 ///////////////////////////////////////
 
-// console.log(request.responseText);
-const renderCountry = function (data, className = '') {
-  const html = `
-  <article class="country ${className}">
-    <img class="country__img" src="${data.flags.png}" />
-    <div class="country__data">
-      <h3 class="country__name">${data.name.common}</h3>
-      <h4 class="country__region">${data.region}</h4>
-      <p class="country__row"><span>👫</span>${(data.population / 10000000).toFixed(1)} People</p>
-      <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
-      <p class="country__row"><span>💰</span>${Object.keys(data.currencies)[0]}</p>
-    </div>
-  </article>
-  `;
-  countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
-};
+// // console.log(request.responseText);
+// const renderCountry = function (data, className = '') {
+//   const html = `
+//   <article class="country ${className}">
+//     <img class="country__img" src="${data.flags.png}" />
+//     <div class="country__data">
+//       <h3 class="country__name">${data.name.common}</h3>
+//       <h4 class="country__region">${data.region}</h4>
+//       <p class="country__row"><span>👫</span>${(data.population / 10000000).toFixed(1)} People</p>
+//       <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
+//       <p class="country__row"><span>💰</span>${Object.keys(data.currencies)[0]}</p>
+//     </div>
+//   </article>
+//   `;
+//   countriesContainer.insertAdjacentHTML('beforeend', html);
+//   countriesContainer.style.opacity = 1;
+// };
 
-const getCountryAndNeighbour = function (country) {
-  // AJAX CALL 1
-  const request = new XMLHttpRequest();
-  request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
-  request.send();
+// const getCountryAndNeighbour = function (country) {
+//   // AJAX CALL 1
+//   const request = new XMLHttpRequest();
+//   request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
+//   request.send();
 
-  //AJAX Country 1
-  request.addEventListener('load', function () {
-    const [data] = JSON.parse(this.responseText);
+//   //AJAX Country 1
+//   request.addEventListener('load', function () {
+//     const [data] = JSON.parse(this.responseText);
 
-    console.log(data);
+//     console.log(data);
 
-    renderCountry(data);
+//     renderCountry(data);
 
-    //get neighbor country
-    const neighbour = data.borders?.[0];
+//     //get neighbor country
+//     const neighbour = data.borders?.[0];
 
-    if (!neighbour) return;
+//     if (!neighbour) return;
 
-    // AJAX CALL 2
-    const request2 = new XMLHttpRequest();
-    request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
-    request2.send();
+//     // AJAX CALL 2
+//     const request2 = new XMLHttpRequest();
+//     request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
+//     request2.send();
 
-    request2.addEventListener('load', function () {
-      const [data2] = JSON.parse(this.responseText);
+//     request2.addEventListener('load', function () {
+//       const [data2] = JSON.parse(this.responseText);
 
-      renderCountry(data2, 'neighbour');
-    });
-  });
-};
+//       renderCountry(data2, 'neighbour');
+//     });
+//   });
+// };
 
-getCountryAndNeighbour('france');
+// getCountryAndNeighbour('france');
 
-// callback hell / nested callback
-setTimeout(() => {
-  console.log('1 second passed');
-  setTimeout(() => {
-    console.log('2 second passed');
-    setTimeout(() => {
-      console.log('3 second passed');
-      setTimeout(() => {
-        console.log('4 second passed');
-      }, 1000);
-    }, 1000);
-  }, 1000);
-}, 1000);
-*/
+// // callback hell / nested callback
+// setTimeout(() => {
+//   console.log('1 second passed');
+//   setTimeout(() => {
+//     console.log('2 second passed');
+//     setTimeout(() => {
+//       console.log('3 second passed');
+//       setTimeout(() => {
+//         console.log('4 second passed');
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
 
 //////////////////////////////////////////////
 // PROMISES
@@ -293,7 +294,7 @@ GOOD LUCK 😀
 
 const whereAmI = function (lat, lng) {
   fetch(
-    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}longitude=${lng}`,
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
   )
     .then(response => {
       if (!response.ok)
@@ -304,9 +305,8 @@ const whereAmI = function (lat, lng) {
     .then(data => {
       console.log(`You are in ${data.city}, ${data.countryName}`);
 
-      return fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}longitude=${lng}`,
-      );
+      // const countryName = data.countryName;
+      return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
     })
     .then(response => {
       if (!response.ok)
@@ -315,9 +315,11 @@ const whereAmI = function (lat, lng) {
       return response.json();
     })
     .then(data => {
-      console.log(
-        `${data.city} is located in ${data.principalSubdivision} ${data.localityInfo.administrative?.[3].description}`,
-      );
+      // console.log(
+        // `You're in ${data[0].name}, the population is about ${population} People, the language is called ${data[0].languages[0].nativeName}`,
+      // );
+
+       renderCountry(data[0]);
     })
     .catch(err => {
       (countriesContainer.insertAdjacentText(
@@ -331,12 +333,11 @@ const whereAmI = function (lat, lng) {
     });
 };
 
+
 btn.addEventListener('click', e => {
   whereAmI(52.508, 13.381);
-  // whereAmI(-6.1944491, 106.8229198);
-  // whereAmI(3.1319197, 101.6840589);
-  // whereAmI(1.3521, 103.8198);
+  whereAmI(19.037, 72.873);
+  whereAmI(-33.933, 18.474);
 
-  // getCountryData('noCountry');
-  // e.currentTarget.classList.add('hidden');
-});
+  e.currentTarget.classList.add('hidden')
+})
