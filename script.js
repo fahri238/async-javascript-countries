@@ -2,30 +2,30 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-const renderCountry = function (data, className = '') {
-  const population =
-        data.population > 1000000
-          ? `${(data.population / 1000000).toFixed(2)} Milion`
-          : `${(data.population / 1000).toFixed(1)} Thousand`;
-  const html = `
-  <article class="country ${className}">
-    <img class="country__img" src="${data.flags.png}" />
-    <div class="country__data">
-      <h3 class="country__name">${data.name}</h3>
-      <h4 class="country__region">${data.region}</h4>
-      <p class="country__row"><span>👫</span>${population} People</p>
-      <p class="country__row"><span>🗣️</span>${data.languages[0].nativeName}</p>
-      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-    </div>
-  </article>
-  `;
-  countriesContainer.insertAdjacentHTML('beforeend', html);
-};
+// const renderCountry = function (data, className = '') {
+//   const population =
+//         data.population > 1000000
+//           ? `${(data.population / 1000000).toFixed(2)} Milion`
+//           : `${(data.population / 1000).toFixed(1)} Thousand`;
+//   const html = `
+//   <article class="country ${className}">
+//     <img class="country__img" src="${data.flags.png}" />
+//     <div class="country__data">
+//       <h3 class="country__name">${data.name}</h3>
+//       <h4 class="country__region">${data.region}</h4>
+//       <p class="country__row"><span>👫</span>${population} People</p>
+//       <p class="country__row"><span>🗣️</span>${data.languages[0].nativeName}</p>
+//       <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+//     </div>
+//   </article>
+//   `;
+//   countriesContainer.insertAdjacentHTML('beforeend', html);
+// };
 
-const renderError = function (msg) {
-  countriesContainer.insertAdjacentText('beforeend', msg);
-  // countriesContainer.style.opacity = 1;
-};
+// const renderError = function (msg) {
+//   countriesContainer.insertAdjacentText('beforeend', msg);
+//   // countriesContainer.style.opacity = 1;
+// };
 //////////////////////////////////////////////
 // FIRST AJAX XMLHttpRequest
 /*
@@ -292,52 +292,66 @@ TEST COORDINATES 2: -33.933, 18.474
 GOOD LUCK 😀
 */
 
-const whereAmI = function (lat, lng) {
-  fetch(
-    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
-  )
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Problem with geocoding ${response.status}`);
+// const whereAmI = function (lat, lng) {
+//   fetch(
+//     `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+//   )
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Problem with geocoding ${response.status}`);
 
-      return response.json();
-    })
-    .then(data => {
-      console.log(`You are in ${data.city}, ${data.countryName}`);
+//       return response.json();
+//     })
+//     .then(data => {
+//       console.log(`You are in ${data.city}, ${data.countryName}`);
 
-      // const countryName = data.countryName;
-      return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
-    })
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Problem with geocoding ${response.status}`);
+//       // const countryName = data.countryName;
+//       return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
+//     })
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Problem with geocoding ${response.status}`);
 
-      return response.json();
-    })
-    .then(data => {
-      // console.log(
-        // `You're in ${data[0].name}, the population is about ${population} People, the language is called ${data[0].languages[0].nativeName}`,
-      // );
+//       return response.json();
+//     })
+//     .then(data => {
+//       // console.log(
+//         // `You're in ${data[0].name}, the population is about ${population} People, the language is called ${data[0].languages[0].nativeName}`,
+//       // );
 
-       renderCountry(data[0]);
-    })
-    .catch(err => {
-      (countriesContainer.insertAdjacentText(
-        'beforeend',
-        `Something went wrong ${err.message} try again!!`,
-      ),
-        console.log(err.message));
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
+//        renderCountry(data[0]);
+//     })
+//     .catch(err => {
+//       (countriesContainer.insertAdjacentText(
+//         'beforeend',
+//         `Something went wrong ${err.message} try again!!`,
+//       ),
+//         console.log(err.message));
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
 
+// btn.addEventListener('click', e => {
+//   whereAmI(52.508, 13.381);
+//   whereAmI(19.037, 72.873);
+//   whereAmI(-33.933, 18.474);
 
-btn.addEventListener('click', e => {
-  whereAmI(52.508, 13.381);
-  whereAmI(19.037, 72.873);
-  whereAmI(-33.933, 18.474);
+//   e.currentTarget.classList.add('hidden')
+// })
 
-  e.currentTarget.classList.add('hidden')
-})
+//////////////////////////////////////////////
+// THE EVENT LOOP
+
+console.log('test start');
+setTimeout(() => {
+  console.log('0 sec timer');
+}, 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+Promise.resolve('Resolved promise 2').then(res => {
+  for (let i = 0; i < 10000; i++) {
+    console.log(res);
+  }
+});
+console.log('test end');
