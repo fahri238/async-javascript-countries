@@ -344,14 +344,78 @@ GOOD LUCK 😀
 //////////////////////////////////////////////
 // THE EVENT LOOP
 
-console.log('test start');
-setTimeout(() => {
-  console.log('0 sec timer');
-}, 0);
-Promise.resolve('Resolved promise 1').then(res => console.log(res));
-Promise.resolve('Resolved promise 2').then(res => {
-  for (let i = 0; i < 10000; i++) {
-    console.log(res);
-  }
+// console.log('test start');
+// setTimeout(() => {
+//   console.log('0 sec timer');
+// }, 0);
+// Promise.resolve('Resolved promise 1').then(res => console.log(res));
+// Promise.resolve('Resolved promise 2').then(res => {
+//   for (let i = 0; i < 10000; i++) {
+//     console.log(res);
+//   }
+// });
+// console.log('test end');
+
+//////////////////////////////////////////////
+// BUILDING SIMPLE PROMISE
+
+const lotteryPromise = new Promise(function (resolve, reject) {
+  console.log('Loteery drow is happening...');
+  setTimeout(function () {
+    if (Math.random() >= 0.5) {
+      resolve('You are Win💰'); // fulfilled promise
+    } else {
+      reject(new Error('You Lost your money🐶')); // rejected promise
+    }
+  }, 2000);
 });
-console.log('test end');
+
+lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+
+// real world example
+const wait = second =>
+  new Promise(function (resolve) {
+    setTimeout(resolve, second * 1000);
+  });
+
+wait(3)
+  .then(() => {
+    console.log('wait for 3 seconds');
+    return wait(1);
+  })
+  .then(() => console.log('wait for 4 seconds'));
+
+// solve callback hell with promise
+// setTimeout(() => {
+//   console.log('1 second passed');
+//   setTimeout(() => {
+//     console.log('2 second passed');
+//     setTimeout(() => {
+//       console.log('3 second passed');
+//       setTimeout(() => {
+//         console.log('4 second passed');
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
+
+wait(1)
+  .then(() => {
+    console.log('1 second passed');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('2 seconds passed');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('3 seconds passed');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('4 seconds passed');
+  });
+
+// resolve & reject immedietely
+Promise.resolve('hai it is resolved').then(res => console.log(res))
+Promise.reject(new Error('hai it is rejected')).then(res => console.error(res))
