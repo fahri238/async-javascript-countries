@@ -2,25 +2,25 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-// const renderCountry = function (data, className = '') {
-//   const population =
-//         data.population > 1000000
-//           ? `${(data.population / 1000000).toFixed(2)} Milion`
-//           : `${(data.population / 1000).toFixed(1)} Thousand`;
-//   const html = `
-//   <article class="country ${className}">
-//     <img class="country__img" src="${data.flags.png}" />
-//     <div class="country__data">
-//       <h3 class="country__name">${data.name}</h3>
-//       <h4 class="country__region">${data.region}</h4>
-//       <p class="country__row"><span>👫</span>${population} People</p>
-//       <p class="country__row"><span>🗣️</span>${data.languages[0].nativeName}</p>
-//       <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-//     </div>
-//   </article>
-//   `;
-//   countriesContainer.insertAdjacentHTML('beforeend', html);
-// };
+const renderCountry = function (data, className = '') {
+  const population =
+    data.population > 1000000
+      ? `${(data.population / 1000000).toFixed(2)} Milion`
+      : `${(data.population / 1000).toFixed(1)} Thousand`;
+  const html = `
+  <article class="country ${className}">
+    <img class="country__img" src="${data.flags.png}" />
+    <div class="country__data">
+      <h3 class="country__name">${data.name}</h3>
+      <h4 class="country__region">${data.region}</h4>
+      <p class="country__row"><span>👫</span>${population} People</p>
+      <p class="country__row"><span>🗣️</span>${data.languages[0].nativeName}</p>
+      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+    </div>
+  </article>
+  `;
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+};
 
 // const renderError = function (msg) {
 //   countriesContainer.insertAdjacentText('beforeend', msg);
@@ -359,31 +359,31 @@ GOOD LUCK 😀
 //////////////////////////////////////////////
 // BUILDING SIMPLE PROMISE
 
-const lotteryPromise = new Promise(function (resolve, reject) {
-  console.log('Loteery drow is happening...');
-  setTimeout(function () {
-    if (Math.random() >= 0.5) {
-      resolve('You are Win💰'); // fulfilled promise
-    } else {
-      reject(new Error('You Lost your money🐶')); // rejected promise
-    }
-  }, 2000);
-});
+// const lotteryPromise = new Promise(function (resolve, reject) {
+//   console.log('Loteery drow is happening...');
+//   setTimeout(function () {
+//     if (Math.random() >= 0.5) {
+//       resolve('You are Win💰'); // fulfilled promise
+//     } else {
+//       reject(new Error('You Lost your money🐶')); // rejected promise
+//     }
+//   }, 2000);
+// });
 
-lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+// lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
-// real world example
-const wait = second =>
-  new Promise(function (resolve) {
-    setTimeout(resolve, second * 1000);
-  });
+// // real world example
+// const wait = second =>
+//   new Promise(function (resolve) {
+//     setTimeout(resolve, second * 1000);
+//   });
 
-wait(3)
-  .then(() => {
-    console.log('wait for 3 seconds');
-    return wait(1);
-  })
-  .then(() => console.log('wait for 4 seconds'));
+// wait(3)
+//   .then(() => {
+//     console.log('wait for 3 seconds');
+//     return wait(1);
+//   })
+//   .then(() => console.log('wait for 4 seconds'));
 
 // solve callback hell with promise
 // setTimeout(() => {
@@ -399,23 +399,99 @@ wait(3)
 //   }, 1000);
 // }, 1000);
 
-wait(1)
-  .then(() => {
-    console.log('1 second passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('2 seconds passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('3 seconds passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('4 seconds passed');
-  });
+// wait(1)
+//   .then(() => {
+//     console.log('1 second passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('2 seconds passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('3 seconds passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('4 seconds passed');
+//   });
 
-// resolve & reject immedietely
-Promise.resolve('hai it is resolved').then(res => console.log(res))
-Promise.reject(new Error('hai it is rejected')).then(res => console.error(res))
+// // resolve & reject immedietely
+// Promise.resolve('hai it is resolved').then(res => console.log(res))
+// Promise.reject(new Error('hai it is rejected')).then(res => console.error(res));
+
+////////////////////////////////////////
+// PROMISYFING THE GEOLOCATION API
+// navigator.geolocation.getCurrentPosition(
+//   posisition => console.log(posisition),
+//   err => console.error(err),
+// );
+
+// console.log("Getting position... ");
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   posisition => resolve(posisition),
+    //   err => reject(err),
+    // );
+
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+// getPosition().then(pos => console.log('your location', pos));
+
+const whereAmI = function () {
+  getPosition()
+    .then(pos => {
+      //fullfilled
+      const { latitude: lat, longitude: lng } = pos.coords;
+
+      return fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+      );
+    })
+
+    .then(response => {
+      if (!response.ok)
+        throw new Error(`Problem with geocoding ${response.status}`);
+
+      return response.json();
+    })
+    .then(data => {
+      console.log(`You are in ${data.city}, ${data.countryName}`);
+
+      // const countryName = data.countryName;
+      return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
+    })
+    .then(response => {
+      if (!response.ok)
+        throw new Error(`Problem with geocoding ${response.status}`);
+
+      return response.json();
+    })
+    .then(data => {
+      // console.log(
+      // `You're in ${data[0].name}, the population is about ${population} People, the language is called ${data[0].languages[0].nativeName}`,
+      // );
+
+      renderCountry(data[0]);
+    })
+    .catch(err => {
+      (countriesContainer.insertAdjacentText(
+        'beforeend',
+        `Something went wrong ${err.message} try again!!`,
+      ),
+        console.log(err.message));
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
+};
+
+btn.addEventListener('click', e => {
+  whereAmI();
+
+  e.currentTarget.classList.add('hidden');
+});
