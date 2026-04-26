@@ -429,69 +429,144 @@ GOOD LUCK 😀
 
 // console.log("Getting position... ");
 
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    // navigator.geolocation.getCurrentPosition(
-    //   posisition => resolve(posisition),
-    //   err => reject(err),
-    // );
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     // navigator.geolocation.getCurrentPosition(
+//     //   posisition => resolve(posisition),
+//     //   err => reject(err),
+//     // );
 
-    navigator.geolocation.getCurrentPosition(resolve, reject);
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
+
+// // getPosition().then(pos => console.log('your location', pos));
+
+// const whereAmI = function () {
+//   getPosition()
+//     .then(pos => {
+//       //fullfilled
+//       const { latitude: lat, longitude: lng } = pos.coords;
+
+//       return fetch(
+//         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+//       );
+//     })
+
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Problem with geocoding ${response.status}`);
+
+//       return response.json();
+//     })
+//     .then(data => {
+//       console.log(`You are in ${data.city}, ${data.countryName}`);
+
+//       // const countryName = data.countryName;
+//       return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
+//     })
+//     .then(response => {
+//       if (!response.ok)
+//         throw new Error(`Problem with geocoding ${response.status}`);
+
+//       return response.json();
+//     })
+//     .then(data => {
+//       renderCountry(data[0]);
+//     })
+//     .catch(err => {
+//       (countriesContainer.insertAdjacentText(
+//         'beforeend',
+//         `Something went wrong ${err.message} try again!!`,
+//       ),
+//         console.log(err.message));
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
+// btn.addEventListener('click', e => {
+//   whereAmI();
+
+//   e.currentTarget.classList.add('hidden');
+// });
+
+//////////////////////////////////////////////////////////
+// Coding Challenge #2
+
+/* 
+Build the image loading functionality that I just showed you on the screen.
+
+Tasks are not super-descriptive this time, so that you can figure out some 
+stuff on your own. Pretend you're working on your own 😉
+
+PART 1
+1. Create a function 'createImage' which receives imgPath as an input. 
+This function returns a promise which creates a new image 
+(use document.createElement('img')) and sets the .src attribute to 
+the provided image path. When the image is done loading, append it to 
+the DOM element with the 'images' class, and resolve the promise. 
+The fulfilled value should be the image element itself. In case there 
+is an error loading the image ('error' event), reject the promise.
+
+If this part is too tricky for you, just watch the first part of the solution.
+
+PART 2
+2. Comsume the promise using .then and also add an error handler;
+3. After the image has loaded, pause execution for 2 seconds using the 
+wait function we created earlier;
+4. After the 2 seconds have passed, hide the current image (set display 
+to 'none'), and load a second image (HINT: Use the image element returned 
+by the createImage promise to hide the current image. You will need a global 
+variable for that 😉);
+5. After the second image has loaded, pause execution for 2 seconds again;
+6. After the 2 seconds have passed, hide the current image.
+
+TEST DATA: Images in the img folder. Test the error handler by passing a wrong image path. 
+Set the network speed to 'Fast 3G' in the dev tools Network tab, otherwise images load too 
+fast.
+
+GOOD LUCK 😀
+*/
+btn.classList.add('hidden');
+const imageEl = document.querySelector('.images');
+const createImage = imgPath => {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+    img.addEventListener('load', () => {
+      imageEl.append(img);
+      resolve(img);
+    });
+
+    img.addEventListener('error', () => {
+      reject(new Error("Can't find the image"));
+    });
   });
 };
 
-// getPosition().then(pos => console.log('your location', pos));
+const wait = second =>
+  new Promise(function (resolve) {
+    setTimeout(resolve, second * 1000);
+  });
 
-const whereAmI = function () {
-  getPosition()
-    .then(pos => {
-      //fullfilled
-      const { latitude: lat, longitude: lng } = pos.coords;
-
-      return fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
-      );
-    })
-
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Problem with geocoding ${response.status}`);
-
-      return response.json();
-    })
-    .then(data => {
-      console.log(`You are in ${data.city}, ${data.countryName}`);
-
-      // const countryName = data.countryName;
-      return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
-    })
-    .then(response => {
-      if (!response.ok)
-        throw new Error(`Problem with geocoding ${response.status}`);
-
-      return response.json();
-    })
-    .then(data => {
-      // console.log(
-      // `You're in ${data[0].name}, the population is about ${population} People, the language is called ${data[0].languages[0].nativeName}`,
-      // );
-
-      renderCountry(data[0]);
-    })
-    .catch(err => {
-      (countriesContainer.insertAdjacentText(
-        'beforeend',
-        `Something went wrong ${err.message} try again!!`,
-      ),
-        console.log(err.message));
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
-
-btn.addEventListener('click', e => {
-  whereAmI();
-
-  e.currentTarget.classList.add('hidden');
-});
+let currentImage;
+createImage('/img/img-1.jpg')
+  .then(img => {
+    currentImage = img;
+    console.log('img-1 displayed');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+    return createImage('/img/img-2.jpg');
+  })
+  .then(img => {
+    currentImage = img;
+    console.log('img-2 displayed');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+  });
