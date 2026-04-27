@@ -656,13 +656,12 @@ const get3Countries = async function (c1, c2, c3) {
     // const [data3] = await getJSON(`https://restcountries.com/v2/name/${c3}`);
     // console.log  (data1.capital, data2.capital, data3.capital);
 
-    // if one promise reject then all of the other promise will reject also
+    // if one promise rejected then all of the other promise will reject also
     const data = await Promise.all([
       getJSON(`https://restcountries.com/v2/name/${c1}`),
       getJSON(`https://restcountries.com/v2/name/${c2}`),
       getJSON(`https://restcountries.com/v2/name/${c3}`),
     ]);
-    console.log(data);
     console.log(data.map(country => country[0].capital));
   } catch (error) {
     console.error(error.message);
@@ -670,3 +669,49 @@ const get3Countries = async function (c1, c2, c3) {
 };
 
 get3Countries('indonesia', 'portugal', 'usa');
+
+///////////////////////////////////////////////
+// PROMISE COMBINATORS: RACE, ALLSETTLED AND ANY
+
+// promise.race
+(async function () {
+  // executed the fastest promise fetch no matter if it's fullfilled or rejected
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v2/name/indonesia`),
+    getJSON(`https://restcountries.com/v2/name/usa`),
+    getJSON(`https://restcountries.com/v2/name/canada`),
+  ]);
+  console.log(res[0]);
+})();
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(() => {
+      reject(new Error('Request took too long!'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJSON(`https://restcountries.com/v2/name/malaysia`),
+  timeout(0.1),
+])
+  .then(data => console.log(data[0]))
+  .catch(err => console.error(err));
+
+// Promise.allSettled
+// executed all of the promises and not stop until all of them has been executed
+Promise.allSettled([
+  Promise.resolve('success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+]).then(res => console.log(res));
+// this combinator never getting to catch
+
+// Promise.any [ES2021]
+// opposite of Promise.all, this return fulfilled the first of the Element and ignore the rejected
+Promise.any([
+  Promise.resolve('success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+]).then(res => console.log(res));
