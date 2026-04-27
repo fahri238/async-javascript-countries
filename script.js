@@ -573,48 +573,8 @@ GOOD LUCK 😀
 //     currentImage.style.display = 'none';
 //   });
 
-///////////////////////////////////////////////
-// CONSUMING PROMISES WITH ASYNC
-// const getPosition = function () {
-//   return new Promise(function (resolve, reject) {
-//     navigator.geolocation.getCurrentPosition(resolve, reject);
-//   });
-// };
-
-// const whereAmi = async function () {
-//   // old way
-//   // fetch(`https://restcountries.com/v3.1/name/${country}`).then(res => console.log(res))
-
-//   // getting position
-//   // geolocation
-//   const pos = getPosition();
-//   const { latitude: lat, longitude: lng } = pos;
-//   const resGeo = await fetch(
-//     `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
-//   );
-
-//   // geolocation data
-//   const dataGeo = await resGeo.json();
-
-//   // render country from current position
-//   // country data
-//   const res = await fetch(
-//     `https://restcountries.com/v2/name/${dataGeo.countryName}`,
-//   );
-//   const data = await res.json();
-//   renderCountry(data[0]);
-// };
-
-// btn.addEventListener('click', e => {
-//   whereAmi();
-
-//   e.currentTarget.classList.add('hidden');
-// });
-
-// console.log('Output First');
-
-////////////////////////////////////////////////////
-// HANDLING ERROR WITH TRY CATCH
+///////////////////////////////////////////////////////
+//RETURNING VALUES FROM ASYNC FUNCTIONS
 
 // small example
 // try {
@@ -636,11 +596,16 @@ const whereAmi = async function () {
     const pos = getPosition();
     const { latitude: lat, longitude: lng } = pos;
 
+    // oldway
+    // fetch(
+    //   `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+    // ).then(res => res)
+
     const resGeo = await fetch(
       `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
     );
-    if (!resGeo.ok) throw new Error(`Problem getting location data ${resGeo.status}`)
-
+    if (!resGeo.ok)
+      throw new Error(`Problem getting location data ${resGeo.status}`);
 
     // geolocation data
     const dataGeo = await resGeo.json();
@@ -650,19 +615,34 @@ const whereAmi = async function () {
     const res = await fetch(
       `https://restcountries.com/v2/name/${dataGeo.countryName}`,
     );
-    if (!res.ok) throw new Error(`Problem getting Country ${res.status}`)
+    if (!res.ok) throw new Error(`Problem getting Country ${res.status}`);
     const data = await res.json();
+    console.log(data);
     renderCountry(data[0]);
+
+    return `you are in ${dataGeo.city}, ${dataGeo.countryName}`;
   } catch (err) {
-    // alert(err.message);
-    renderError(`💥 ${err.message}`)
+    renderError(`💥 ${err.message}`);
+
+    throw err;
   }
 };
 
-btn.addEventListener('click', e => {
-  whereAmi();
+console.log('1: will get location');
+// const data = whereAmi()
+// console.log(data.then(res => `${res}`));
 
-  e.currentTarget.classList.add('hidden');
-});
+// whereAmi()
+//   .then(city => console.log(`2: ${city}`))
+//   .catch(err => console.error(`2: ${err}`))
+//   .finally(() => console.log('3: Finsihed getting location'));
 
-console.log('Output First');
+(async function () {
+  try {
+    const city = await whereAmi();
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err}`);
+  } //finally, always gonna be executed
+  console.log('3: Finsihed getting location');
+})();
