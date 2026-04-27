@@ -217,13 +217,13 @@ getCountry('japan');
 //////////////////////////////////////////////////////////
 // THROWING ERROR
 
-// const getJSON = function (url, errMessage) {
-//   return fetch(url).then(response => {
-//     if (!response.ok) throw new Error(`${errMessage} ${response.status}`);
+const getJSON = function (url, errMessage) {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errMessage} ${response.status}`);
 
-//     return response.json();
-//   });
-// };
+    return response.json();
+  });
+};
 
 // const getCountryData = function (country) {
 //   // promise
@@ -585,64 +585,88 @@ GOOD LUCK 😀
 //   alert(err.message);
 // }
 
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-};
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
 
-const whereAmi = async function () {
+// const whereAmi = async function () {
+//   try {
+//     const pos = getPosition();
+//     const { latitude: lat, longitude: lng } = pos;
+
+//     // oldway
+//     // fetch(
+//     //   `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+//     // ).then(res => res)
+
+//     const resGeo = await fetch(
+//       `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+//     );
+//     if (!resGeo.ok)
+//       throw new Error(`Problem getting location data ${resGeo.status}`);
+
+//     // geolocation data
+//     const dataGeo = await resGeo.json();
+
+//     // render country from current position
+//     // country data
+//     const res = await fetch(
+//       `https://restcountries.com/v2/name/${dataGeo.countryName}`,
+//     );
+//     if (!res.ok) throw new Error(`Problem getting Country ${res.status}`);
+//     const data = await res.json();
+//     console.log(data);
+//     renderCountry(data[0]);
+
+//     return `you are in ${dataGeo.city}, ${dataGeo.countryName}`;
+//   } catch (err) {
+//     renderError(`💥 ${err.message}`);
+
+//     throw err;
+//   }
+// };
+
+// console.log('1: will get location');
+// // const data = whereAmi()
+// // console.log(data.then(res => `${res}`));
+
+// // whereAmi()
+// //   .then(city => console.log(`2: ${city}`))
+// //   .catch(err => console.error(`2: ${err}`))
+// //   .finally(() => console.log('3: Finsihed getting location'));
+
+// (async function () {
+//   try {
+//     const city = await whereAmi();
+//     console.log(`2: ${city}`);
+//   } catch (err) {
+//     console.error(`2: ${err}`);
+//   } //finally, always gonna be executed
+//   console.log('3: Finsihed getting location');
+// })();
+
+///////////////////////////////////////////////
+// RUNNING PROMISE IN PARALEL
+const get3Countries = async function (c1, c2, c3) {
   try {
-    const pos = getPosition();
-    const { latitude: lat, longitude: lng } = pos;
+    // const [data1] = await getJSON(`https://restcountries.com/v2/name/${c1}`);
+    // const [data2] = await getJSON(`https://restcountries.com/v2/name/${c2}`);
+    // const [data3] = await getJSON(`https://restcountries.com/v2/name/${c3}`);
+    // console.log  (data1.capital, data2.capital, data3.capital);
 
-    // oldway
-    // fetch(
-    //   `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
-    // ).then(res => res)
-
-    const resGeo = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
-    );
-    if (!resGeo.ok)
-      throw new Error(`Problem getting location data ${resGeo.status}`);
-
-    // geolocation data
-    const dataGeo = await resGeo.json();
-
-    // render country from current position
-    // country data
-    const res = await fetch(
-      `https://restcountries.com/v2/name/${dataGeo.countryName}`,
-    );
-    if (!res.ok) throw new Error(`Problem getting Country ${res.status}`);
-    const data = await res.json();
+    // if one promise reject then all of the other promise will reject also
+    const data = await Promise.all([
+      getJSON(`https://restcountries.com/v2/name/${c1}`),
+      getJSON(`https://restcountries.com/v2/name/${c2}`),
+      getJSON(`https://restcountries.com/v2/name/${c3}`),
+    ]);
     console.log(data);
-    renderCountry(data[0]);
-
-    return `you are in ${dataGeo.city}, ${dataGeo.countryName}`;
-  } catch (err) {
-    renderError(`💥 ${err.message}`);
-
-    throw err;
+    console.log(data.map(country => country[0].capital));
+  } catch (error) {
+    console.error(error.message);
   }
 };
 
-console.log('1: will get location');
-// const data = whereAmi()
-// console.log(data.then(res => `${res}`));
-
-// whereAmi()
-//   .then(city => console.log(`2: ${city}`))
-//   .catch(err => console.error(`2: ${err}`))
-//   .finally(() => console.log('3: Finsihed getting location'));
-
-(async function () {
-  try {
-    const city = await whereAmi();
-    console.log(`2: ${city}`);
-  } catch (err) {
-    console.error(`2: ${err}`);
-  } //finally, always gonna be executed
-  console.log('3: Finsihed getting location');
-})();
+get3Countries('indonesia', 'portugal', 'usa');
