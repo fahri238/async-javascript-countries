@@ -553,6 +553,7 @@ GOOD LUCK 😀
 //     setTimeout(resolve, second * 1000);
 //   });
 
+// consume promise
 // let currentImage;
 // createImage('/img/img-1.jpg')
 //   .then(img => {
@@ -647,71 +648,174 @@ GOOD LUCK 😀
 //   console.log('3: Finsihed getting location');
 // })();
 
-///////////////////////////////////////////////
-// RUNNING PROMISE IN PARALEL
-const get3Countries = async function (c1, c2, c3) {
-  try {
-    // const [data1] = await getJSON(`https://restcountries.com/v2/name/${c1}`);
-    // const [data2] = await getJSON(`https://restcountries.com/v2/name/${c2}`);
-    // const [data3] = await getJSON(`https://restcountries.com/v2/name/${c3}`);
-    // console.log  (data1.capital, data2.capital, data3.capital);
+// ///////////////////////////////////////////////
+// // RUNNING PROMISE IN PARALEL
+// const get3Countries = async function (c1, c2, c3) {
+//   try {
+//     // const [data1] = await getJSON(`https://restcountries.com/v2/name/${c1}`);
+//     // const [data2] = await getJSON(`https://restcountries.com/v2/name/${c2}`);
+//     // const [data3] = await getJSON(`https://restcountries.com/v2/name/${c3}`);
+//     // console.log  (data1.capital, data2.capital, data3.capital);
 
-    // if one promise rejected then all of the other promise will reject also
-    const data = await Promise.all([
-      getJSON(`https://restcountries.com/v2/name/${c1}`),
-      getJSON(`https://restcountries.com/v2/name/${c2}`),
-      getJSON(`https://restcountries.com/v2/name/${c3}`),
-    ]);
-    console.log(data.map(country => country[0].capital));
-  } catch (error) {
-    console.error(error.message);
-  }
-};
+//     // if one promise rejected then all of the other promise will reject also
+//     const data = await Promise.all([
+//       getJSON(`https://restcountries.com/v2/name/${c1}`),
+//       getJSON(`https://restcountries.com/v2/name/${c2}`),
+//       getJSON(`https://restcountries.com/v2/name/${c3}`),
+//     ]);
+//     console.log(data.map(country => country[0].capital));
+//   } catch (error) {
+//     console.error(error.message);
+//   }
+// };
 
-get3Countries('indonesia', 'portugal', 'usa');
+// get3Countries('indonesia', 'portugal', 'usa');
 
-///////////////////////////////////////////////
-// PROMISE COMBINATORS: RACE, ALLSETTLED AND ANY
+// ///////////////////////////////////////////////
+// // PROMISE COMBINATORS: RACE, ALLSETTLED AND ANY
 
-// promise.race
-(async function () {
-  // executed the fastest promise fetch no matter if it's fullfilled or rejected
-  const res = await Promise.race([
-    getJSON(`https://restcountries.com/v2/name/indonesia`),
-    getJSON(`https://restcountries.com/v2/name/usa`),
-    getJSON(`https://restcountries.com/v2/name/canada`),
-  ]);
-  console.log(res[0]);
-})();
+// // promise.race
+// (async function () {
+//   // executed the fastest promise fetch no matter if it's fullfilled or rejected
+//   const res = await Promise.race([
+//     getJSON(`https://restcountries.com/v2/name/indonesia`),
+//     getJSON(`https://restcountries.com/v2/name/usa`),
+//     getJSON(`https://restcountries.com/v2/name/canada`),
+//   ]);
+//   console.log(res[0]);
+// })();
 
-const timeout = function (sec) {
-  return new Promise(function (_, reject) {
-    setTimeout(() => {
-      reject(new Error('Request took too long!'));
-    }, sec * 1000);
+// const timeout = function (sec) {
+//   return new Promise(function (_, reject) {
+//     setTimeout(() => {
+//       reject(new Error('Request took too long!'));
+//     }, sec * 1000);
+//   });
+// };
+
+// Promise.race([
+//   getJSON(`https://restcountries.com/v2/name/malaysia`),
+//   timeout(0.1),
+// ])
+//   .then(data => console.log(data[0]))
+//   .catch(err => console.error(err));
+
+// // Promise.allSettled
+// // executed all of the promises and not stop until l of them has been executed
+// Promise.allSettled([
+//   Promise.resolve('success'),
+//   Promise.reject('ERROR'),
+//   Promise.resolve('Another success'),
+// ]).then(res => console.log(res));
+// // this combinator never getting to catch
+
+// // Promise.any [ES2021]
+// // opposite of Promise.all, this return fulfilled the first of the Element and ignore the rejected
+// Promise.any([
+//   Promise.resolve('success'),
+//   Promise.reject('ERROR'),
+//   Promise.resolve('Another success'),
+// ]).then(res => console.log(res));
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+PART 1
+Write an async function 'loadNPause' that recreates Coding Challenge #2, 
+this time using async/await (only the part where the promise is consumed). 
+Compare the two versions, think about the big differences, and see which 
+one you like more. Don't forget to test the error handler, and to set the 
+network speed to 'Fast 3G' in the dev tools Network tab.
+
+PART 2
+1. Create an async function 'loadAll' that receives an array of image paths 'imgArr';
+2. Use .map to loop over the array, to load all the images with the 'createImage' 
+function (call the resulting array 'imgs')
+3. Check out the 'imgs' array in the console! Is it like you expected?
+4. Use a promise combinator function to actually get the images from the array 😉
+5. Add the 'paralell' class to all the images (it has some CSS styles).
+
+TEST DATA: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']. To test, turn off the 'loadNPause' function.
+
+GOOD LUCK 😀
+*/
+btn.classList.add('hidden');
+const imagesEl = document.querySelector('.images');
+
+const wait = second =>
+  new Promise(function (resolve) {
+    setTimeout(resolve, second * 1000);
+  });
+
+const imageEl = document.querySelector('.images');
+
+const createImage = imgPath => {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+    img.addEventListener('load', () => {
+      imageEl.append(img);
+      resolve(img);
+    });
+
+    img.addEventListener('error', () => {
+      reject(new Error("Can't find the image"));
+    });
   });
 };
 
-Promise.race([
-  getJSON(`https://restcountries.com/v2/name/malaysia`),
-  timeout(0.1),
-])
-  .then(data => console.log(data[0]))
-  .catch(err => console.error(err));
+// consume promise
+// let currentImage;
+// createImage('/img/img-1.jpg')
+//   .then(img => {
+//     currentImage = img;
+//     console.log('img-1 displayed');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//     return createImage('/img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImage = img;
+//     console.log('img-2 displayed');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//   });
 
-// Promise.allSettled
-// executed all of the promises and not stop until all of them has been executed
-Promise.allSettled([
-  Promise.resolve('success'),
-  Promise.reject('ERROR'),
-  Promise.resolve('Another success'),
-]).then(res => console.log(res));
-// this combinator never getting to catch
+const loadNPause = async () => {
+  try {
+    let img = await createImage('/img/img-1.jpg');
+    await wait(2);
+    console.log(img, 'displayed');
+    img.style.display = 'none';
 
-// Promise.any [ES2021]
-// opposite of Promise.all, this return fulfilled the first of the Element and ignore the rejected
-Promise.any([
-  Promise.resolve('success'),
-  Promise.reject('ERROR'),
-  Promise.resolve('Another success'),
-]).then(res => console.log(res));
+    img = await createImage('/img/img-2.jpg');
+    await wait(2);
+    console.log(img, 'displayed');
+    img.style.display = 'none';
+
+    img = await createImage('/img/img-3.jpg');
+    await wait(2);
+    console.log(img, 'displayed');
+    img.style.display = 'none';
+  } catch (error) {
+    console.error('problem with the image', error.message);
+  }
+};
+
+const loadAll = async function(imgArr) {
+  try {
+    const imgs = imgArr.map(async img => await createImage(img));
+    const imgsEl = await Promise.all(imgs);
+    imgsEl.forEach(img => img.classList.add('paralell'));   
+  } catch (error) {
+    console.error('cant load the images', error.message);
+  }
+};
+
+// loadNPause();
+loadAll(['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']);
